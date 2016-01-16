@@ -1,12 +1,30 @@
 import graphene
 
-class Query(graphene.ObjectType):
-  hello = graphene.String()
 
-  def resolve_hello(self, args, info):
-    return 'World'
+class User(graphene.Interface):
+    roles = graphene.String()
+    name = graphene.String()
 
-schema = graphene.Schema(query=Query)
+    def resolve_roles(self, args, info):
+        return self.roles
 
-result = schema.execute('{ hello }')
-print result.data['hello']
+    def resolve_name(self, args, info):
+        return self.name
+
+
+class Subscriber(User):
+
+    def resolve_roles(self, args, info):
+        return "[\"sub\"]"
+
+
+class Admin(User):
+
+    def resolve_roles(self, args, info):
+        return "[\"admin\"]"
+
+
+schema = graphene.Schema(query=Subscriber)
+
+result = schema.execute('{ roles }')
+print result.data['roles']
